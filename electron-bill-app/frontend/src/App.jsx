@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import BillComponent from './components/BillComponent';
 
 const App = () => {
     const [pdfPath, setPdfPath] = useState("");  // Store selected PDF path
@@ -8,7 +9,7 @@ const App = () => {
     const handleFileSelect = async () => {
         const filePath = await window.electron.selectFile();
         if (filePath) {
-            console.log("🛠 Selected File Path:", filePath);  // Debugging
+            // console.log("🛠 Selected File Path:", filePath);  // Debugging
             setPdfPath(filePath);
         }
     };
@@ -32,17 +33,27 @@ const App = () => {
         } else {
             alert("Bill component is missing.");
         }
-    };
+    };const [billData, setBillData] = useState({
+      number: '12345',
+      date: '2023-10-01',
+      amount: '$100.00'
+  });
 
+  const handlePrint = () => {
+      const content = document.getElementById('bill-content').innerHTML;
+      window.electron.printComponent(content);
+  };
+
+ 
     return (
-        <div style={{ textAlign: "center", padding: "20px", marginLeft: "120px" }}>
+        <div style={{ textAlign: "center", padding: "15px", marginLeft: "120px" }}>
             <h1>Electron Bill Printer</h1>
 
             {/* PDF Selection and Printing */}
             <button onClick={handleFileSelect} style={{ margin: "10px", padding: "10px" }}>
                 Select PDF
             </button>
-            {pdfPath && <p>📄 Selected: {pdfPath}</p>}
+            {/* {pdfPath && <p>📄 Selected: {pdfPath}</p>} */}
 
             <button onClick={handlePrintPDF} style={{ margin: "10px", padding: "10px" }}>
                 Print Selected PDF
@@ -53,6 +64,13 @@ const App = () => {
                 Print HTML Bill
             </button>
 
+            <div className="App">
+          <div id="bill-content">
+              <BillComponent billData={billData} />
+          </div>
+          <button onClick={handlePrint}>Print Bill</button>
+      </div>
+
             {/* Bill Component */}
             {/* <div ref={billRef} style={{ marginTop: "20px", border: "1px solid black", padding: "10px" }}>
                 <h2>Bill Summary</h2>
@@ -62,6 +80,7 @@ const App = () => {
             </div> */}
         </div>
     );
+    
 };
 
 export default App;
